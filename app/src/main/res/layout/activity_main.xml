@@ -43,7 +43,8 @@
         android:layout_height="169dp"
         android:id="@+id/restaurantImage"
         android:src="@drawable/mcdowells"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:transitionName="logo"/>
 
     <Button
         android:layout_width="wrap_content"
