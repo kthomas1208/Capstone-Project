@@ -37,7 +37,8 @@
         android:id="@+id/restaurantTitle"
         android:text="McDowell's"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="48dp" />
+        android:textSize="48dp"
+        android:transitionName="title"/>
     <ImageView
         android:layout_width="148dp"
         android:layout_height="169dp"

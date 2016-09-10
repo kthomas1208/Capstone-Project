@@ -6,25 +6,30 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
 import android.view.View;
-import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
+
+    View mRestaurantLogo;
+    View mRestaurantTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ImageView image = (ImageView)findViewById(R.id.restaurantImage);
-        image.setOnClickListener(new View.OnClickListener() {
+        mRestaurantLogo = findViewById(R.id.restaurantImage);
+        mRestaurantTitle = findViewById(R.id.restaurantTitle);
+        mRestaurantLogo.setOnClickListener(new View.OnClickListener() {
                                      @Override
                                      public void onClick(View view) {
                                          Intent intent = new Intent(MainActivity.this,
                                                  DetailActivity.class);
+
                                          ActivityOptions options =
                                                  ActivityOptions.makeSceneTransitionAnimation(
                                                          MainActivity.this,
-                                                         Pair.create(view,"logo"));
+                                                         Pair.create(mRestaurantLogo,"logo"),
+                                                         Pair.create(mRestaurantTitle,"title"));
                                          startActivity(intent,options.toBundle());
                                      }
                                  }
