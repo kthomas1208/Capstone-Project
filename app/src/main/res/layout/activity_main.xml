@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:inputType="textPostalAddress"
             android:ems="10"
-            android:id="@+id/editText"
+            android:id="@+id/locationEdit"
             android:layout_weight="1" />
 
         <Button
