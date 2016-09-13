@@ -16,6 +16,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        release {
+            resValue "string", "MyApiKey", MyApiKey
+        }
+        debug {
+            resValue "string", "MyApiKey", MyApiKey
+        }
     }
 }
 
