@@ -23,6 +23,10 @@ android {
             resValue "string", "MyApiKey", MyApiKey
         }
     }
+
+    buildTypes.each {
+        it.buildConfigField 'String', 'MyApiKey', MyApiKey
+    }
 }
 
 dependencies {
@@ -30,4 +34,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.google.android.gms:play-services-places:9.4.0'
+    compile 'com.android.volley:volley:1.0.0'
 }
