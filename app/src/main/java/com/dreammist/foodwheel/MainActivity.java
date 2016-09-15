@@ -2,6 +2,7 @@ package com.dreammist.foodwheel;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,8 +29,14 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
 
@@ -38,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     View mRestaurantTitle;
     View mLocationFinder;
     View mLocationEnter;
+    View mFindRestaurant;
+    String mCoordinates;
 
     private GoogleApiClient mGoogleApiClient;
     protected final static int PLACE_PICKER_REQUEST = 9090;
@@ -92,8 +101,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
-        FetchRestaurantsTask restaurantTask = new FetchRestaurantsTask();
-        restaurantTask.execute();
+        mFindRestaurant = findViewById(R.id.findButton);
+        mFindRestaurant.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FetchRestaurantsTask restaurantTask = new FetchRestaurantsTask();
+                restaurantTask.execute();
+            }
+        });
 
     }
 
@@ -119,9 +134,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void displayPlace(Place place) {
-        String address = place.getAddress().toString();
+        LatLng latlng = place.getLatLng();
+        mCoordinates = latlng.latitude + "," + latlng.longitude;
+
         if(mLocationEnter != null) {
-            ((EditText)mLocationEnter).setText(address);
+            ((EditText)mLocationEnter).setText(mCoordinates);
         }
 
     }
@@ -137,6 +154,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         @Override
         protected Void doInBackground(Void... voids) {
 
+            if(mCoordinates == null) return null;
+
             final RequestQueue mRequestQueue;
 
             // Instantiate the cache
@@ -151,27 +170,58 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             // Start the queue
             mRequestQueue.start();
 
+            //"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&type=restaurant&name=cruise&key=" + API_KEY,
+
+            final String PLACES_BASE_URL =
+                    "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
+            final String LOCATION_PARAM = "location";
+            final String RADIUS_PARAM = "radius";
+            final String TYPE_PARAM = "type";
+            final String KEY_PARAM = "key";
+
             String API_KEY = BuildConfig.MyApiKey;
+            String RADIUS = "500";
+            String TYPE = "restaurant";
 
-            JsonObjectRequest jsonObjRequest = new JsonObjectRequest(Request.Method.GET,
-                    "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&type=restaurant&name=cruise&key=" + API_KEY,
-                    null,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Log.v(LOG_TAG, "Received JSON response: " + response.toString());
-                            mRequestQueue.stop();
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e(LOG_TAG, "Error getting JSON data: " + error.getMessage());
-                    mRequestQueue.stop();
+            Uri builtUri = Uri.parse(PLACES_BASE_URL).buildUpon()
+                    .appendQueryParameter(LOCATION_PARAM, mCoordinates)
+                    .appendQueryParameter(RADIUS_PARAM, RADIUS)
+                    .appendQueryParameter(TYPE_PARAM, TYPE)
+                    .appendQueryParameter(KEY_PARAM, API_KEY)
+                    .build();
+            try {
+                URL url = new URL(builtUri.toString());
 
-                }
-            });
+                Log.v(LOG_TAG,"API Call: " + url.toString());
 
-            mRequestQueue.add(jsonObjRequest);
+                JsonObjectRequest jsonObjRequest = new JsonObjectRequest(Request.Method.GET,
+                        url.toString(),
+                        null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                Log.v(LOG_TAG, "Received JSON response: " + response.toString());
+                                try {
+                                    JSONArray responseArray = response.getJSONArray("results");
+                                    String restaurantName = responseArray.getJSONObject(1).getString("name");
+                                    Log.v(LOG_TAG, "restaurant name: " + restaurantName);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                mRequestQueue.stop();
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(LOG_TAG, "Error getting JSON data: " + error.getMessage());
+                        mRequestQueue.stop();
+                    }
+                });
+
+                mRequestQueue.add(jsonObjRequest);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
 
             return null;
         }
