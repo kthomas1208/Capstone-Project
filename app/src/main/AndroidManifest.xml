@@ -31,6 +31,11 @@
 
         <activity android:name=".DetailActivity"></activity>
 
+        <provider
+            android:name="com.dreammist.foodwheel.provider.RestaurantProvider"
+            android:authorities="com.dreammist.foodwheel.provider"
+            android:exported="false" />
+
     </application>
 
 </manifest>
