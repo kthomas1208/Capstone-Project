@@ -22,6 +22,7 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.facebook.stetho.Stetho;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
+        Stetho.initializeWithDefaults(this);
     }
 
     @Override
