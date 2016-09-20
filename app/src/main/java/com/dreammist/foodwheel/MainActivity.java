@@ -1,6 +1,7 @@
 package com.dreammist.foodwheel;
 
 import android.app.ActivityOptions;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -22,6 +23,7 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.dreammist.foodwheel.provider.restaurant.RestaurantColumns;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -38,6 +40,7 @@ import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
 
@@ -111,7 +114,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
-        Stetho.initializeWithDefaults(this);
+        initializeStetho();
+    }
+
+    private void initializeStetho(){
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(
+                                Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(
+                                Stetho.defaultInspectorModulesProvider(this))
+                        .build());
     }
 
     @Override
@@ -196,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                 Log.v(LOG_TAG,"API Call: " + url.toString());
 
+
                 JsonObjectRequest jsonObjRequest = new JsonObjectRequest(Request.Method.GET,
                         url.toString(),
                         null,
@@ -205,8 +219,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                 Log.v(LOG_TAG, "Received JSON response: " + response.toString());
                                 try {
                                     JSONArray responseArray = response.getJSONArray("results");
-                                    String restaurantName = responseArray.getJSONObject(1).getString("name");
-                                    Log.v(LOG_TAG, "restaurant name: " + restaurantName);
+                                    Vector<ContentValues> cvValues =
+                                            new Vector<>(responseArray.length());
+
+                                    for(int i=0; i<responseArray.length(); i++) {
+                                        ContentValues restaurantValues = new ContentValues();
+                                        String restaurantName = responseArray.getJSONObject(i).getString("name");
+                                        restaurantValues.put(RestaurantColumns.NAME,restaurantName);
+                                        Log.v(LOG_TAG, "restaurant name: " + restaurantName);
+
+                                        cvValues.add(restaurantValues);
+                                    }
+
+                                    int inserted = 0;
+                                    // add to database
+                                    if ( cvValues.size() > 0 ) {
+                                        ContentValues[] cvArray = new ContentValues[cvValues.size()];
+                                        cvValues.toArray(cvArray);
+                                        inserted = getContentResolver().bulkInsert(RestaurantColumns.CONTENT_URI, cvArray);
+                                    }
+
+                                    Log.v(LOG_TAG, "FetchWeatherTask Complete. " + inserted + " Inserted");
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
