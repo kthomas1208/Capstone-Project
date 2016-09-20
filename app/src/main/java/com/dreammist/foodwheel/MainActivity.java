@@ -225,7 +225,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                     for(int i=0; i<responseArray.length(); i++) {
                                         ContentValues restaurantValues = new ContentValues();
                                         String restaurantName = responseArray.getJSONObject(i).getString("name");
+                                        String placeID = responseArray.getJSONObject(i).getString("place_id");
+                                        JSONArray photosArray = responseArray.getJSONObject(i).optJSONArray("photos");
+                                        String photoRef = "";
+                                        if(photosArray!=null)
+                                            photoRef = photosArray.getJSONObject(0).optString("photo_reference");
+                                        float rating = (float)responseArray.getJSONObject(i).optDouble("rating");
+                                        //String type = responseArray.getJSONObject(i).getString("type");
+                                        JSONObject openingHoursObj = responseArray.getJSONObject(i).optJSONObject("opening_hours");
+                                        boolean isOpen = false;
+                                        if(openingHoursObj!=null)
+                                            isOpen = openingHoursObj.optBoolean("open_now");
+                                        int priceLevel = responseArray.getJSONObject(i).optInt("price_level");
+
+
                                         restaurantValues.put(RestaurantColumns.NAME,restaurantName);
+                                        restaurantValues.put(RestaurantColumns.PLACE_ID,placeID);
+                                        restaurantValues.put(RestaurantColumns.PHOTO_REF,photoRef);
+                                        restaurantValues.put(RestaurantColumns.RATING,rating);
+                                        //restaurantValues.put(RestaurantColumns.TYPE,type);
+                                        restaurantValues.put(RestaurantColumns.IS_OPEN,isOpen);
+                                        restaurantValues.put(RestaurantColumns.PRICE_LEVEL,priceLevel);
                                         Log.v(LOG_TAG, "restaurant name: " + restaurantName);
 
                                         cvValues.add(restaurantValues);
