@@ -2,6 +2,7 @@ package com.dreammist.foodwheel;
 
 import android.app.ActivityOptions;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Cache;
@@ -36,6 +38,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -112,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mFindRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FetchRestaurantsTask restaurantTask = new FetchRestaurantsTask();
+                FetchRestaurantsTask restaurantTask = new FetchRestaurantsTask(MainActivity.this);
                 restaurantTask.execute();
             }
         });
@@ -168,6 +171,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     public class FetchRestaurantsTask extends AsyncTask<Void, Void, Void> {
+        Context mContext;
+
+        public FetchRestaurantsTask(Context context) {
+            mContext = context;
+        }
 
 
         @Override
@@ -292,9 +300,34 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             super.onPostExecute(aVoid);
 
             RestaurantSelection where = new RestaurantSelection();
+            where.photoRefNot("null");
             RestaurantCursor restaurant = where.query(getContentResolver());
             restaurant.moveToNext();
             ((TextView)mRestaurantTitle).setText(restaurant.getName());
+            // https://maps.googleapis.com/maps/api/place/photo?maxwidth=400
+            // &photoreference=CnRtAAAATLZNl354RwP_9UKbQ_5Psy40texXePv4oAlgP4qNEkdIrkyse7rPXYGd9D_Uj1rVsQdWT4oRz4QrYAJNpFX7rzqqMlZw2h2E2y5IKMUZ7ouD_SlcHxYq1yL4KbKUv3qtWgTK0A6QbGh87GB3sscrHRIQiG2RrmU_jF4tENr9wGS_YxoUSSDrYjWmrNfeEHSGSc3FyhNLlBU
+            // &key=AIzaSyAeDHr2K0fPSNtzcJhY8zveVxR7U3J94UY
+
+            final String PHOTOS_BASE_URL =
+                    "https://maps.googleapis.com/maps/api/place/photo?";
+            final String MAXWIDTH_PARAM = "maxwidth";
+            final String PHOTOREF_PARAM = "photoreference";
+            final String KEY_PARAM = "key";
+
+            String API_KEY = BuildConfig.MyApiKey;
+            String photoRef = restaurant.getPhotoRef();
+            Log.v(LOG_TAG, "PHOTO REF: " + photoRef);
+
+            if(!photoRef.equals("null")) {
+                Uri builtUri = Uri.parse(PHOTOS_BASE_URL).buildUpon()
+                        .appendQueryParameter(MAXWIDTH_PARAM, "200")
+                        .appendQueryParameter(PHOTOREF_PARAM, photoRef)
+                        .appendQueryParameter(KEY_PARAM, API_KEY)
+                        .build();
+
+                Log.v(LOG_TAG, builtUri.toString());
+                Picasso.with(mContext).load(builtUri.toString()).into((ImageView) mRestaurantLogo);
+            }
         }
     }
 }
