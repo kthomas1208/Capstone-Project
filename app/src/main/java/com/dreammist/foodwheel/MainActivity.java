@@ -12,6 +12,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.Cache;
 import com.android.volley.Network;
@@ -24,6 +25,8 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.dreammist.foodwheel.provider.restaurant.RestaurantColumns;
+import com.dreammist.foodwheel.provider.restaurant.RestaurantCursor;
+import com.dreammist.foodwheel.provider.restaurant.RestaurantSelection;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -151,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void displayPlace(Place place) {
         LatLng latlng = place.getLatLng();
         mCoordinates = latlng.latitude + "," + latlng.longitude;
+        Log.v(LOG_TAG,mCoordinates);
 
         if(mLocationEnter != null) {
             ((EditText)mLocationEnter).setText(mCoordinates);
@@ -168,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         @Override
         protected Void doInBackground(Void... voids) {
+            mCoordinates = "40.740812499999976,-73.69514453125";
 
             if(mCoordinates == null) return null;
 
@@ -280,6 +285,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
 
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            RestaurantSelection where = new RestaurantSelection();
+            RestaurantCursor restaurant = where.query(getContentResolver());
+            restaurant.moveToNext();
+            ((TextView)mRestaurantTitle).setText(restaurant.getName());
         }
     }
 }
