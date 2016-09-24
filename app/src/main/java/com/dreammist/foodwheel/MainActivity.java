@@ -46,6 +46,7 @@ import org.json.JSONObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Random;
 import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
@@ -302,7 +303,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             RestaurantSelection where = new RestaurantSelection();
             where.photoRefNot("null");
             RestaurantCursor restaurant = where.query(getContentResolver());
-            restaurant.moveToNext();
+            Random rand = new Random();
+            restaurant.moveToPosition(rand.nextInt(restaurant.getCount()));
+
             ((TextView)mRestaurantTitle).setText(restaurant.getName());
 
             final String PHOTOS_BASE_URL =
@@ -317,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             if(!photoRef.equals("null")) {
                 Uri builtUri = Uri.parse(PHOTOS_BASE_URL).buildUpon()
-                        .appendQueryParameter(MAXWIDTH_PARAM, "200")
+                        .appendQueryParameter(MAXWIDTH_PARAM, "500")
                         .appendQueryParameter(PHOTOREF_PARAM, photoRef)
                         .appendQueryParameter(KEY_PARAM, API_KEY)
                         .build();
