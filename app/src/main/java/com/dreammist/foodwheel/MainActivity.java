@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     View mLocationEnter;
     View mFindRestaurant;
     String mCoordinates;
+    String mPlaceID;
 
     private GoogleApiClient mGoogleApiClient;
     protected final static int PLACE_PICKER_REQUEST = 9090;
@@ -79,50 +80,54 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mRestaurantLogo.setOnClickListener(new View.OnClickListener() {
                                      @Override
                                      public void onClick(View view) {
-                                         Intent intent = new Intent(MainActivity.this,
-                                                 DetailActivity.class);
+                                         // Start the details activity if you click on the logo
+            Intent intent = new Intent(MainActivity.this,
+                    DetailActivity.class);
 
-                                         ActivityOptions options =
-                                                 ActivityOptions.makeSceneTransitionAnimation(
-                                                         MainActivity.this,
-                                                         Pair.create(mRestaurantLogo,"logo"),
-                                                         Pair.create(mRestaurantTitle,"title"));
-                                         startActivity(intent,options.toBundle());
-                                     }
-                                 }
-        );
+            if (mPlaceID != null)
+                intent.putExtra("PLACE_ID", mPlaceID);
 
-        mLocationFinder = findViewById(R.id.locatorButton);
-        mLocationFinder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.v(LOG_TAG, "clicked");
-                if( mGoogleApiClient == null || !mGoogleApiClient.isConnected() )
-                    return;
-                Log.v(LOG_TAG, "connected");
-                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
-                try {
-                    startActivityForResult( builder.build( MainActivity.this), PLACE_PICKER_REQUEST );
-                } catch ( GooglePlayServicesRepairableException e ) {
-                    Log.d( "PlacesAPI Demo", "GooglePlayServicesRepairableException thrown" );
-                } catch ( GooglePlayServicesNotAvailableException e ) {
-                    Log.d( "PlacesAPI Demo", "GooglePlayServicesNotAvailableException thrown" );
-                }
-            }
-        });
-
-        mFindRestaurant = findViewById(R.id.findButton);
-        mFindRestaurant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FetchRestaurantsTask restaurantTask = new FetchRestaurantsTask(MainActivity.this);
-                restaurantTask.execute();
-            }
-        });
-
-        initializeStetho();
+            ActivityOptions options =
+                    ActivityOptions.makeSceneTransitionAnimation(
+                            MainActivity.this,
+                            Pair.create(mRestaurantLogo,"logo"),
+                            Pair.create(mRestaurantTitle,"title"));
+            startActivity(intent,options.toBundle());
+        }
     }
+    );
+
+    mLocationFinder = findViewById(R.id.locatorButton);
+    mLocationFinder.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Log.v(LOG_TAG, "clicked");
+            if( mGoogleApiClient == null || !mGoogleApiClient.isConnected() )
+                return;
+            Log.v(LOG_TAG, "connected");
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+            try {
+                startActivityForResult( builder.build( MainActivity.this), PLACE_PICKER_REQUEST );
+            } catch ( GooglePlayServicesRepairableException e ) {
+                Log.d( "PlacesAPI Demo", "GooglePlayServicesRepairableException thrown" );
+            } catch ( GooglePlayServicesNotAvailableException e ) {
+                Log.d( "PlacesAPI Demo", "GooglePlayServicesNotAvailableException thrown" );
+            }
+        }
+    });
+
+    mFindRestaurant = findViewById(R.id.findButton);
+    mFindRestaurant.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            FetchRestaurantsTask restaurantTask = new FetchRestaurantsTask(MainActivity.this);
+            restaurantTask.execute();
+        }
+    });
+
+    initializeStetho();
+}
 
     private void initializeStetho(){
         Stetho.initialize(
@@ -171,143 +176,147 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     }
 
-    public class FetchRestaurantsTask extends AsyncTask<Void, Void, Void> {
-        Context mContext;
+public class FetchRestaurantsTask extends AsyncTask<Void, Void, Void> {
+    Context mContext;
 
-        public FetchRestaurantsTask(Context context) {
-            mContext = context;
-        }
-
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            mCoordinates = "40.740812499999976,-73.69514453125";
-
-            if(mCoordinates == null) return null;
-
-            final RequestQueue mRequestQueue;
-
-            // Instantiate the cache
-            Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
-
-            // Set up the network to use HttpURLConnection as the HTTP client.
-            Network network = new BasicNetwork(new HurlStack());
-
-            // Instantiate the RequestQueue with the cache and network.
-            mRequestQueue = new RequestQueue(cache, network);
-
-            // Start the queue
-            mRequestQueue.start();
-
-            //"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&type=restaurant&name=cruise&key=" + API_KEY,
-
-            final String PLACES_BASE_URL =
-                    "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
-            final String LOCATION_PARAM = "location";
-            final String RADIUS_PARAM = "radius";
-            final String TYPE_PARAM = "type";
-            final String KEY_PARAM = "key";
-
-            String API_KEY = BuildConfig.MyApiKey;
-            String RADIUS = "500";
-            String TYPE = "restaurant";
-
-            Uri builtUri = Uri.parse(PLACES_BASE_URL).buildUpon()
-                    .appendQueryParameter(LOCATION_PARAM, mCoordinates)
-                    .appendQueryParameter(RADIUS_PARAM, RADIUS)
-                    .appendQueryParameter(TYPE_PARAM, TYPE)
-                    .appendQueryParameter(KEY_PARAM, API_KEY)
-                    .build();
-            try {
-                URL url = new URL(builtUri.toString());
-
-                Log.v(LOG_TAG,"API Call: " + url.toString());
+    public FetchRestaurantsTask(Context context) {
+        mContext = context;
+    }
 
 
-                JsonObjectRequest jsonObjRequest = new JsonObjectRequest(Request.Method.GET,
-                        url.toString(),
-                        null,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                Log.v(LOG_TAG, "Received JSON response: " + response.toString());
-                                try {
-                                    JSONArray responseArray = response.getJSONArray("results");
-                                    Vector<ContentValues> cvValues =
-                                            new Vector<>(responseArray.length());
+    @Override
+    protected Void doInBackground(Void... voids) {
+        mCoordinates = "40.740812499999976,-73.69514453125";
 
-                                    for(int i=0; i<responseArray.length(); i++) {
-                                        ContentValues restaurantValues = new ContentValues();
-                                        String restaurantName = responseArray.getJSONObject(i).getString("name");
-                                        String placeID = responseArray.getJSONObject(i).getString("place_id");
-                                        JSONArray photosArray = responseArray.getJSONObject(i).optJSONArray("photos");
-                                        String photoRef = "";
-                                        if(photosArray!=null)
-                                            photoRef = photosArray.getJSONObject(0).optString("photo_reference");
-                                        float rating = (float)responseArray.getJSONObject(i).optDouble("rating");
-                                        //String type = responseArray.getJSONObject(i).getString("type");
-                                        JSONObject openingHoursObj = responseArray.getJSONObject(i).optJSONObject("opening_hours");
-                                        boolean isOpen = false;
-                                        if(openingHoursObj!=null)
-                                            isOpen = openingHoursObj.optBoolean("open_now");
-                                        int priceLevel = responseArray.getJSONObject(i).optInt("price_level");
+        if(mCoordinates == null) return null;
+
+        final RequestQueue mRequestQueue;
+
+        // Instantiate the cache
+        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
+
+        // Set up the network to use HttpURLConnection as the HTTP client.
+        Network network = new BasicNetwork(new HurlStack());
+
+        // Instantiate the RequestQueue with the cache and network.
+        mRequestQueue = new RequestQueue(cache, network);
+
+        // Start the queue
+        mRequestQueue.start();
+
+        //"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&type=restaurant&name=cruise&key=" + API_KEY,
+
+        final String PLACES_BASE_URL =
+                "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
+        final String LOCATION_PARAM = "location";
+        final String RADIUS_PARAM = "radius";
+        final String TYPE_PARAM = "type";
+        final String KEY_PARAM = "key";
+
+        String API_KEY = BuildConfig.MyApiKey;
+        String RADIUS = "500";
+        String TYPE = "restaurant";
+
+        Uri builtUri = Uri.parse(PLACES_BASE_URL).buildUpon()
+                .appendQueryParameter(LOCATION_PARAM, mCoordinates)
+                .appendQueryParameter(RADIUS_PARAM, RADIUS)
+                .appendQueryParameter(TYPE_PARAM, TYPE)
+                .appendQueryParameter(KEY_PARAM, API_KEY)
+                .build();
+        try {
+            URL url = new URL(builtUri.toString());
+
+            Log.v(LOG_TAG,"API Call: " + url.toString());
 
 
-                                        restaurantValues.put(RestaurantColumns.NAME,restaurantName);
-                                        restaurantValues.put(RestaurantColumns.PLACE_ID,placeID);
-                                        restaurantValues.put(RestaurantColumns.PHOTO_REF,photoRef);
-                                        restaurantValues.put(RestaurantColumns.RATING,rating);
-                                        //restaurantValues.put(RestaurantColumns.TYPE,type);
-                                        restaurantValues.put(RestaurantColumns.IS_OPEN,isOpen);
-                                        restaurantValues.put(RestaurantColumns.PRICE_LEVEL,priceLevel);
-                                        Log.v(LOG_TAG, "restaurant name: " + restaurantName);
+            JsonObjectRequest jsonObjRequest = new JsonObjectRequest(Request.Method.GET,
+                    url.toString(),
+                    null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.v(LOG_TAG, "Received JSON response: " + response.toString());
+                            try {
+                                JSONArray responseArray = response.getJSONArray("results");
+                                Vector<ContentValues> cvValues =
+                                        new Vector<>(responseArray.length());
 
-                                        cvValues.add(restaurantValues);
-                                    }
+                                for(int i=0; i<responseArray.length(); i++) {
+                                    ContentValues restaurantValues = new ContentValues();
+                                    String restaurantName = responseArray.getJSONObject(i).getString("name");
+                                    String placeID = responseArray.getJSONObject(i).getString("place_id");
+                                    JSONArray photosArray = responseArray.getJSONObject(i).optJSONArray("photos");
+                                    String photoRef = "";
+                                    if(photosArray!=null)
+                                        photoRef = photosArray.getJSONObject(0).optString("photo_reference");
+                                    float rating = (float)responseArray.getJSONObject(i).optDouble("rating");
+                                    //String type = responseArray.getJSONObject(i).getString("type");
+                                    JSONObject openingHoursObj = responseArray.getJSONObject(i).optJSONObject("opening_hours");
+                                    boolean isOpen = false;
+                                    if(openingHoursObj!=null)
+                                        isOpen = openingHoursObj.optBoolean("open_now");
+                                    int priceLevel = responseArray.getJSONObject(i).optInt("price_level");
 
-                                    int inserted = 0;
-                                    // add to database
-                                    if ( cvValues.size() > 0 ) {
-                                        ContentValues[] cvArray = new ContentValues[cvValues.size()];
-                                        cvValues.toArray(cvArray);
-                                        inserted = getContentResolver().bulkInsert(RestaurantColumns.CONTENT_URI, cvArray);
-                                    }
 
-                                    Log.v(LOG_TAG, "FetchWeatherTask Complete. " + inserted + " Inserted");
+                                    restaurantValues.put(RestaurantColumns.NAME,restaurantName);
+                                    restaurantValues.put(RestaurantColumns.PLACE_ID,placeID);
+                                    restaurantValues.put(RestaurantColumns.PHOTO_REF,photoRef);
+                                    restaurantValues.put(RestaurantColumns.RATING,rating);
+                                    //restaurantValues.put(RestaurantColumns.TYPE,type);
+                                    restaurantValues.put(RestaurantColumns.IS_OPEN,isOpen);
+                                    restaurantValues.put(RestaurantColumns.PRICE_LEVEL,priceLevel);
+                                    Log.v(LOG_TAG, "restaurant name: " + restaurantName);
 
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    cvValues.add(restaurantValues);
+                                    //getContentResolver().update(RestaurantColumns.CONTENT_URI,restaurantValues,null,null);
                                 }
-                                mRequestQueue.stop();
+
+                                int inserted = 0;
+                                // add to database
+                                if ( cvValues.size() > 0 ) {
+                                    ContentValues[] cvArray = new ContentValues[cvValues.size()];
+                                    cvValues.toArray(cvArray);
+                                    inserted = getContentResolver().bulkInsert(RestaurantColumns.CONTENT_URI, cvArray);
+                                }
+
+                                Log.v(LOG_TAG, "FetchWeatherTask Complete. " + inserted + " Inserted");
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(LOG_TAG, "Error getting JSON data: " + error.getMessage());
-                        mRequestQueue.stop();
-                    }
-                });
+                            mRequestQueue.stop();
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e(LOG_TAG, "Error getting JSON data: " + error.getMessage());
+                    mRequestQueue.stop();
+                }
+            });
 
-                mRequestQueue.add(jsonObjRequest);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            return null;
+            mRequestQueue.add(jsonObjRequest);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        return null;
+    }
 
-            RestaurantSelection where = new RestaurantSelection();
-            where.photoRefNot("null");
-            RestaurantCursor restaurant = where.query(getContentResolver());
-            Random rand = new Random();
-            restaurant.moveToPosition(rand.nextInt(restaurant.getCount()));
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
 
+        // Get a random restaurant from the DB
+        RestaurantSelection where = new RestaurantSelection();
+        where.photoRefNot("null");
+        RestaurantCursor restaurant = where.query(getContentResolver());
+        Random rand = new Random();
+        restaurant.moveToPosition(rand.nextInt(restaurant.getCount()));
+
+            // Set the name of the restaurant for display
             ((TextView)mRestaurantTitle).setText(restaurant.getName());
 
+            // Get a photo of the restaurant location
             final String PHOTOS_BASE_URL =
                     "https://maps.googleapis.com/maps/api/place/photo?";
             final String MAXWIDTH_PARAM = "maxwidth";
@@ -328,6 +337,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 Log.v(LOG_TAG, builtUri.toString());
                 Picasso.with(mContext).load(builtUri.toString()).into((ImageView) mRestaurantLogo);
             }
+
+            // Get the PlaceID
+            mPlaceID = restaurant.getPlaceId();
         }
     }
 }
