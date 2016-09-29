@@ -31,9 +31,9 @@ public class RestaurantSQLiteOpenHelper extends SQLiteOpenHelper {
             + RestaurantColumns.RATING + " REAL, "
             + RestaurantColumns.TYPE + " TEXT, "
             + RestaurantColumns.IS_OPEN + " INTEGER, "
-            + RestaurantColumns.PRICE_LEVEL + " INTEGER "
-            + ", CONSTRAINT unique_id UNIQUE (place_id) ON CONFLICT REPLACE"
-            + " );";
+            + RestaurantColumns.PRICE_LEVEL + " INTEGER, "
+            + "UNIQUE (place_id) ON CONFLICT REPLACE "
+            + ");";
 
     // @formatter:on
 
