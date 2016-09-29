@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     View mFindRestaurant;
     String mCoordinates;
     String mPlaceID;
+    String mPhotoURI;
 
     private GoogleApiClient mGoogleApiClient;
     protected final static int PLACE_PICKER_REQUEST = 9090;
@@ -84,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             Intent intent = new Intent(MainActivity.this,
                     DetailActivity.class);
 
-            if (mPlaceID != null)
-                intent.putExtra("PLACE_ID", mPlaceID);
+            if (mPlaceID != null)  intent.putExtra("PLACE_ID", mPlaceID);
+            if (mPhotoURI != null) intent.putExtra("PHOTO_URI", mPhotoURI);
 
             ActivityOptions options =
                     ActivityOptions.makeSceneTransitionAnimation(
@@ -334,8 +335,10 @@ public class FetchRestaurantsTask extends AsyncTask<Void, Void, Void> {
                         .appendQueryParameter(KEY_PARAM, API_KEY)
                         .build();
 
-                Log.v(LOG_TAG, builtUri.toString());
-                Picasso.with(mContext).load(builtUri.toString()).into((ImageView) mRestaurantLogo);
+                mPhotoURI = builtUri.toString();
+
+                Log.v(LOG_TAG, mPhotoURI);
+                Picasso.with(mContext).load(mPhotoURI).into((ImageView) mRestaurantLogo);
             }
 
             // Get the PlaceID

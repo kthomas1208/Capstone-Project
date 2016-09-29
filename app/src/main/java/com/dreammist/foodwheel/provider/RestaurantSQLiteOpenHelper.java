@@ -16,7 +16,7 @@ public class RestaurantSQLiteOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = RestaurantSQLiteOpenHelper.class.getSimpleName();
 
     public static final String DATABASE_FILE_NAME = "restaurant.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static RestaurantSQLiteOpenHelper sInstance;
     private final Context mContext;
     private final RestaurantSQLiteOpenHelperCallbacks mOpenHelperCallbacks;
