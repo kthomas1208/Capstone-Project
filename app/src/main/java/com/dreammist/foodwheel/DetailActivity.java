@@ -3,6 +3,7 @@ package com.dreammist.foodwheel;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.dreammist.foodwheel.provider.restaurant.RestaurantCursor;
@@ -36,5 +37,40 @@ public class DetailActivity extends AppCompatActivity {
         // Set Restaurant Logo
         ImageView restaurantLogo = (ImageView)findViewById(R.id.restaurantImage);
         Picasso.with(this).load(photoURI).into(restaurantLogo);
+
+        // Set rating
+        float rating = restaurant.getRating();
+        RatingBar ratingBar = (RatingBar)findViewById(R.id.ratingBar);
+        ratingBar.setRating(rating);
+
+        // Set type
+        String type = restaurant.getType();
+        TextView typeView = (TextView)findViewById(R.id.restaurantTypes);
+        typeView.setText(type);
+
+        // Set Open Status
+        String isOpen = (restaurant.getIsOpen() ? "Open now" : "Closed");
+        TextView isOpenView = (TextView)findViewById(R.id.hoursText);
+        isOpenView.setText(isOpen);
+
+        // Set price
+        int price = restaurant.getPriceLevel();
+        String pricing;
+        switch (price) {
+            case 0: pricing = "free";
+                    break;
+            case 1: pricing = "$";
+                    break;
+            case 2: pricing = "$$";
+                    break;
+            case 3: pricing = "$$$";
+                    break;
+            case 4: pricing = "$$$$";
+                    break;
+            default: pricing = "No pricing data available";
+        }
+
+        TextView pricingView = (TextView)findViewById(R.id.price);
+        pricingView.setText(pricing);
     }
 }
