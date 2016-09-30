@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">FoodWheel</string>
+    <string name="open_now">Open now</string>
+    <string name="closed">Closed</string>
+    <string name="free">free</string>
+    <string name="no_pricing_data">No pricing data available</string>
 </resources>

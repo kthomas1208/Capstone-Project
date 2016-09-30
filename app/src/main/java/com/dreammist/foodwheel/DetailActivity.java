@@ -49,7 +49,9 @@ public class DetailActivity extends AppCompatActivity {
         typeView.setText(type);
 
         // Set Open Status
-        String isOpen = (restaurant.getIsOpen() ? "Open now" : "Closed");
+
+        String isOpen = (restaurant.getIsOpen() ? getString(R.string.open_now) :
+                getString(R.string.closed));
         TextView isOpenView = (TextView)findViewById(R.id.hoursText);
         isOpenView.setText(isOpen);
 
@@ -57,7 +59,7 @@ public class DetailActivity extends AppCompatActivity {
         int price = restaurant.getPriceLevel();
         String pricing;
         switch (price) {
-            case 0: pricing = "free";
+            case 0: pricing = getString(R.string.free);
                     break;
             case 1: pricing = "$";
                     break;
@@ -67,7 +69,7 @@ public class DetailActivity extends AppCompatActivity {
                     break;
             case 4: pricing = "$$$$";
                     break;
-            default: pricing = "No pricing data available";
+            default: pricing = getString(R.string.no_pricing_data);
         }
 
         TextView pricingView = (TextView)findViewById(R.id.price);
