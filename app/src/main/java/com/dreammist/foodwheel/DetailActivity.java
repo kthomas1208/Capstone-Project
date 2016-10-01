@@ -37,9 +37,12 @@ public class DetailActivity extends AppCompatActivity {
         // Set Restaurant Logo
         ImageView restaurantLogo = (ImageView)findViewById(R.id.restaurantImage);
         Picasso.with(this).load(photoURI).into(restaurantLogo);
+        // if no image, use placeholder
 
         // Set rating
-        float rating = restaurant.getRating();
+        float rating = 0;
+        if(restaurant.getRating() != null) rating = restaurant.getRating();
+
         RatingBar ratingBar = (RatingBar)findViewById(R.id.ratingBar);
         ratingBar.setRating(rating);
 
@@ -49,7 +52,6 @@ public class DetailActivity extends AppCompatActivity {
         typeView.setText(type);
 
         // Set Open Status
-
         String isOpen = (restaurant.getIsOpen() ? getString(R.string.open_now) :
                 getString(R.string.closed));
         TextView isOpenView = (TextView)findViewById(R.id.hoursText);
