@@ -55,15 +55,12 @@ public class RestaurantContentValues extends AbstractContentValues {
     /**
      * Textual ID that uniquely identifies a restaurant
      */
-    public RestaurantContentValues putPlaceId(@Nullable String value) {
+    public RestaurantContentValues putPlaceId(@NonNull String value) {
+        if (value == null) throw new IllegalArgumentException("placeId must not be null");
         mContentValues.put(RestaurantColumns.PLACE_ID, value);
         return this;
     }
 
-    public RestaurantContentValues putPlaceIdNull() {
-        mContentValues.putNull(RestaurantColumns.PLACE_ID);
-        return this;
-    }
 
     /**
      * Reference string for retrieving photos of the restaurant from Places API.
@@ -127,6 +124,19 @@ public class RestaurantContentValues extends AbstractContentValues {
 
     public RestaurantContentValues putPriceLevelNull() {
         mContentValues.putNull(RestaurantColumns.PRICE_LEVEL);
+        return this;
+    }
+
+    /**
+     * The lat/lng coordinates of the restaurant delimited by a comma.
+     */
+    public RestaurantContentValues putLatLng(@Nullable String value) {
+        mContentValues.put(RestaurantColumns.LAT_LNG, value);
+        return this;
+    }
+
+    public RestaurantContentValues putLatLngNull() {
+        mContentValues.putNull(RestaurantColumns.LAT_LNG);
         return this;
     }
 }

@@ -1,7 +1,5 @@
 package com.dreammist.foodwheel.provider.restaurant;
 
-import java.util.Date;
-
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,11 +36,13 @@ public class RestaurantCursor extends AbstractCursor implements RestaurantModel 
 
     /**
      * Textual ID that uniquely identifies a restaurant
-     * Can be {@code null}.
+     * Cannot be {@code null}.
      */
-    @Nullable
+    @NonNull
     public String getPlaceId() {
         String res = getStringOrNull(RestaurantColumns.PLACE_ID);
+        if (res == null)
+            throw new NullPointerException("The value of 'place_id' in the database was null, which is not allowed according to the model definition");
         return res;
     }
 
@@ -93,6 +93,16 @@ public class RestaurantCursor extends AbstractCursor implements RestaurantModel 
     @Nullable
     public Integer getPriceLevel() {
         Integer res = getIntegerOrNull(RestaurantColumns.PRICE_LEVEL);
+        return res;
+    }
+
+    /**
+     * The lat/lng coordinates of the restaurant delimited by a comma.
+     * Can be {@code null}.
+     */
+    @Nullable
+    public String getLatLng() {
+        String res = getStringOrNull(RestaurantColumns.LAT_LNG);
         return res;
     }
 }

@@ -21,9 +21,9 @@ public interface RestaurantModel extends BaseModel {
 
     /**
      * Textual ID that uniquely identifies a restaurant
-     * Can be {@code null}.
+     * Cannot be {@code null}.
      */
-    @Nullable
+    @NonNull
     String getPlaceId();
 
     /**
@@ -60,4 +60,11 @@ public interface RestaurantModel extends BaseModel {
      */
     @Nullable
     Integer getPriceLevel();
+
+    /**
+     * The lat/lng coordinates of the restaurant delimited by a comma.
+     * Can be {@code null}.
+     */
+    @Nullable
+    String getLatLng();
 }

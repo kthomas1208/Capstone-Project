@@ -8,9 +8,19 @@ import android.widget.TextView;
 
 import com.dreammist.foodwheel.provider.restaurant.RestaurantCursor;
 import com.dreammist.foodwheel.provider.restaurant.RestaurantSelection;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements OnMapReadyCallback{
+
+    double mLat;
+    double mLng;
+    String mName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +38,11 @@ public class DetailActivity extends AppCompatActivity {
         where.placeId(placeID);
         RestaurantCursor restaurant = where.query(getContentResolver());
         restaurant.moveToNext();
-        String restaurantName = restaurant.getName();
+        mName = restaurant.getName();
 
         // Set Restaurant Title
         TextView restaurantTitleText = (TextView)findViewById(R.id.restaurantTitle);
-        restaurantTitleText.setText(restaurantName);
+        restaurantTitleText.setText(mName);
 
         // Set Restaurant Logo
         ImageView restaurantLogo = (ImageView)findViewById(R.id.restaurantImage);
@@ -76,5 +86,27 @@ public class DetailActivity extends AppCompatActivity {
 
         TextView pricingView = (TextView)findViewById(R.id.price);
         pricingView.setText(pricing);
+
+        // Get location
+        String latLngData = restaurant.getLatLng();
+        String[] latLngString = latLngData.split(",");
+        mLat = Double.parseDouble(latLngString[0]);
+        mLng = Double.parseDouble(latLngString[1]);
+
+        // Show the restaurant location on a map
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        LatLng position = new LatLng(mLat, mLng);
+        googleMap.addMarker(new MarkerOptions()
+                .position(position)
+                .title(mName));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position,15));
+        googleMap.getUiSettings().setScrollGesturesEnabled(false);
+
     }
 }

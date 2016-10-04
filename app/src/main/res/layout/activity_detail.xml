@@ -64,13 +64,10 @@
         android:id="@+id/price"
         android:layout_gravity="center_horizontal" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        android:name="com.google.android.gms.maps.MapFragment"
         android:id="@+id/map"
-        android:src="@drawable/map"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="1"
-        android:paddingTop="10dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"/>
 </LinearLayout>
 </ScrollView>

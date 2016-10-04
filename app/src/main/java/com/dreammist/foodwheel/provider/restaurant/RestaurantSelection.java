@@ -332,4 +332,44 @@ public class RestaurantSelection extends AbstractSelection<RestaurantSelection> 
         orderBy(RestaurantColumns.PRICE_LEVEL, false);
         return this;
     }
+
+    public RestaurantSelection latLng(String... value) {
+        addEquals(RestaurantColumns.LAT_LNG, value);
+        return this;
+    }
+
+    public RestaurantSelection latLngNot(String... value) {
+        addNotEquals(RestaurantColumns.LAT_LNG, value);
+        return this;
+    }
+
+    public RestaurantSelection latLngLike(String... value) {
+        addLike(RestaurantColumns.LAT_LNG, value);
+        return this;
+    }
+
+    public RestaurantSelection latLngContains(String... value) {
+        addContains(RestaurantColumns.LAT_LNG, value);
+        return this;
+    }
+
+    public RestaurantSelection latLngStartsWith(String... value) {
+        addStartsWith(RestaurantColumns.LAT_LNG, value);
+        return this;
+    }
+
+    public RestaurantSelection latLngEndsWith(String... value) {
+        addEndsWith(RestaurantColumns.LAT_LNG, value);
+        return this;
+    }
+
+    public RestaurantSelection orderByLatLng(boolean desc) {
+        orderBy(RestaurantColumns.LAT_LNG, desc);
+        return this;
+    }
+
+    public RestaurantSelection orderByLatLng() {
+        orderBy(RestaurantColumns.LAT_LNG, false);
+        return this;
+    }
 }

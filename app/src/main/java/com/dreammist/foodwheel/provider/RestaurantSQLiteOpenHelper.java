@@ -16,7 +16,7 @@ public class RestaurantSQLiteOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = RestaurantSQLiteOpenHelper.class.getSimpleName();
 
     public static final String DATABASE_FILE_NAME = "restaurant.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static RestaurantSQLiteOpenHelper sInstance;
     private final Context mContext;
     private final RestaurantSQLiteOpenHelperCallbacks mOpenHelperCallbacks;
@@ -26,14 +26,15 @@ public class RestaurantSQLiteOpenHelper extends SQLiteOpenHelper {
             + RestaurantColumns.TABLE_NAME + " ( "
             + RestaurantColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + RestaurantColumns.NAME + " TEXT, "
-            + RestaurantColumns.PLACE_ID + " TEXT, "
+            + RestaurantColumns.PLACE_ID + " TEXT NOT NULL, "
             + RestaurantColumns.PHOTO_REF + " TEXT, "
             + RestaurantColumns.RATING + " REAL, "
             + RestaurantColumns.TYPE + " TEXT, "
             + RestaurantColumns.IS_OPEN + " INTEGER, "
             + RestaurantColumns.PRICE_LEVEL + " INTEGER, "
-            + "UNIQUE (place_id) ON CONFLICT REPLACE "
-            + ");";
+            + RestaurantColumns.LAT_LNG + " TEXT "
+            + ", CONSTRAINT unique_id UNIQUE (place_id) ON CONFLICT REPLACE"
+            + " );";
 
     // @formatter:on
 
@@ -122,5 +123,6 @@ public class RestaurantSQLiteOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         mOpenHelperCallbacks.onUpgrade(mContext, db, oldVersion, newVersion);
+        onCreate(db);
     }
 }

@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.dreammist.foodwheel.BuildConfig;
+import com.dreammist.foodwheel.provider.restaurant.RestaurantColumns;
 
 /**
  * Implement your custom database creation or upgrade code here.
@@ -33,5 +34,6 @@ public class RestaurantSQLiteOpenHelperCallbacks {
     public void onUpgrade(final Context context, final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         if (BuildConfig.DEBUG) Log.d(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
         // Insert your upgrading code here.
+        db.execSQL("DROP TABLE IF EXISTS " + RestaurantColumns.TABLE_NAME);
     }
 }

@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Always delete data from db when launching app
+        //getContentResolver().delete(RestaurantColumns.CONTENT_URI,null,null);
+
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
@@ -229,7 +232,9 @@ public class FetchRestaurantsTask extends AsyncTask<Void, Void, Void> {
 
             Log.v(LOG_TAG,"API Call: " + url.toString());
 
-
+            /**
+             * RETRIEVE RESTAURANT DATA FROM PLACES API
+             */
             JsonObjectRequest jsonObjRequest = new JsonObjectRequest(Request.Method.GET,
                     url.toString(),
                     null,
@@ -258,6 +263,11 @@ public class FetchRestaurantsTask extends AsyncTask<Void, Void, Void> {
                                         isOpen = openingHoursObj.optBoolean("open_now");
                                     int priceLevel = responseArray.getJSONObject(i).optInt("price_level");
 
+                                    JSONObject locationObject = responseArray.getJSONObject(i)
+                                            .getJSONObject("geometry").getJSONObject("location");
+                                    String lat = locationObject.getString("lat");
+                                    String lng = locationObject.getString("lng");
+                                    String latLng = lat.concat(",").concat(lng);
 
                                     restaurantValues.put(RestaurantColumns.NAME,restaurantName);
                                     restaurantValues.put(RestaurantColumns.PLACE_ID,placeID);
@@ -266,7 +276,10 @@ public class FetchRestaurantsTask extends AsyncTask<Void, Void, Void> {
                                     //restaurantValues.put(RestaurantColumns.TYPE,type);
                                     restaurantValues.put(RestaurantColumns.IS_OPEN,isOpen);
                                     restaurantValues.put(RestaurantColumns.PRICE_LEVEL,priceLevel);
+                                    restaurantValues.put(RestaurantColumns.LAT_LNG,latLng);
+
                                     Log.v(LOG_TAG, "restaurant name: " + restaurantName);
+                                    Log.v(LOG_TAG, "LatLng from call: " + latLng);
 
                                     cvValues.add(restaurantValues);
                                     //getContentResolver().update(RestaurantColumns.CONTENT_URI,restaurantValues,null,null);
@@ -280,7 +293,47 @@ public class FetchRestaurantsTask extends AsyncTask<Void, Void, Void> {
                                     inserted = getContentResolver().bulkInsert(RestaurantColumns.CONTENT_URI, cvArray);
                                 }
 
-                                Log.v(LOG_TAG, "FetchWeatherTask Complete. " + inserted + " Inserted");
+                                Log.v(LOG_TAG, "FetchRestaurantsTask Complete. " + inserted + " Inserted");
+
+                                /**
+                                 * RETRIEVE A RESTAURANT FROM THE DB
+                                 */
+                                // Get a random restaurant from the DB
+                                RestaurantSelection where = new RestaurantSelection();
+                                where.photoRefNot("null");
+                                RestaurantCursor restaurant = where.query(getContentResolver());
+                                Random rand = new Random();
+                                restaurant.moveToPosition(rand.nextInt(restaurant.getCount()));
+
+                                // Set the name of the restaurant for display
+                                ((TextView)mRestaurantTitle).setText(restaurant.getName());
+
+                                // Get a photo of the restaurant location
+                                final String PHOTOS_BASE_URL =
+                                        "https://maps.googleapis.com/maps/api/place/photo?";
+                                final String MAXWIDTH_PARAM = "maxwidth";
+                                final String PHOTOREF_PARAM = "photoreference";
+                                final String KEY_PARAM = "key";
+
+                                String API_KEY = BuildConfig.MyApiKey;
+                                String photoRef = restaurant.getPhotoRef();
+                                Log.v(LOG_TAG, "PHOTO REF: " + photoRef);
+
+                                if(!photoRef.equals("null")) {
+                                    Uri builtUri = Uri.parse(PHOTOS_BASE_URL).buildUpon()
+                                            .appendQueryParameter(MAXWIDTH_PARAM, "500")
+                                            .appendQueryParameter(PHOTOREF_PARAM, photoRef)
+                                            .appendQueryParameter(KEY_PARAM, API_KEY)
+                                            .build();
+
+                                    mPhotoURI = builtUri.toString();
+
+                                    Log.v(LOG_TAG, mPhotoURI);
+                                    Picasso.with(mContext).load(mPhotoURI).into((ImageView) mRestaurantLogo);
+                                }
+
+                                // Get the PlaceID
+                                mPlaceID = restaurant.getPlaceId();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -306,43 +359,14 @@ public class FetchRestaurantsTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-
-        // Get a random restaurant from the DB
-        RestaurantSelection where = new RestaurantSelection();
-        where.photoRefNot("null");
-        RestaurantCursor restaurant = where.query(getContentResolver());
-        Random rand = new Random();
-        restaurant.moveToPosition(rand.nextInt(restaurant.getCount()));
-
-            // Set the name of the restaurant for display
-            ((TextView)mRestaurantTitle).setText(restaurant.getName());
-
-            // Get a photo of the restaurant location
-            final String PHOTOS_BASE_URL =
-                    "https://maps.googleapis.com/maps/api/place/photo?";
-            final String MAXWIDTH_PARAM = "maxwidth";
-            final String PHOTOREF_PARAM = "photoreference";
-            final String KEY_PARAM = "key";
-
-            String API_KEY = BuildConfig.MyApiKey;
-            String photoRef = restaurant.getPhotoRef();
-            Log.v(LOG_TAG, "PHOTO REF: " + photoRef);
-
-            if(!photoRef.equals("null")) {
-                Uri builtUri = Uri.parse(PHOTOS_BASE_URL).buildUpon()
-                        .appendQueryParameter(MAXWIDTH_PARAM, "500")
-                        .appendQueryParameter(PHOTOREF_PARAM, photoRef)
-                        .appendQueryParameter(KEY_PARAM, API_KEY)
-                        .build();
-
-                mPhotoURI = builtUri.toString();
-
-                Log.v(LOG_TAG, mPhotoURI);
-                Picasso.with(mContext).load(mPhotoURI).into((ImageView) mRestaurantLogo);
-            }
-
-            // Get the PlaceID
-            mPlaceID = restaurant.getPlaceId();
+        Log.v(LOG_TAG, "ON POST EXECUTE ENTERED");
+        /**
+         * CURRENT ISSUE: this method is being triggered before the onResponse() of the
+         * JsonObjectRequest. I haven't figured out how to lock the thread to wait for the
+         * onResponse() before calling onPostExecute() so I moved all the code that was
+         * originally in here into onResponse(). This gives us a huge, monolithic chunk of code that
+         * isn't pretty, but it'll have to do for now.
+         */
         }
     }
 }

@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 import com.dreammist.foodwheel.provider.RestaurantProvider;
-import com.dreammist.foodwheel.provider.restaurant.RestaurantColumns;
 
 /**
  * A restaurant that serves food in a local area
@@ -53,6 +52,11 @@ public class RestaurantColumns implements BaseColumns {
      */
     public static final String PRICE_LEVEL = "price_level";
 
+    /**
+     * The lat/lng coordinates of the restaurant delimited by a comma.
+     */
+    public static final String LAT_LNG = "lat_lng";
+
 
     public static final String DEFAULT_ORDER = TABLE_NAME + "." +_ID;
 
@@ -65,7 +69,8 @@ public class RestaurantColumns implements BaseColumns {
             RATING,
             TYPE,
             IS_OPEN,
-            PRICE_LEVEL
+            PRICE_LEVEL,
+            LAT_LNG
     };
     // @formatter:on
 
@@ -79,6 +84,7 @@ public class RestaurantColumns implements BaseColumns {
             if (c.equals(TYPE) || c.contains("." + TYPE)) return true;
             if (c.equals(IS_OPEN) || c.contains("." + IS_OPEN)) return true;
             if (c.equals(PRICE_LEVEL) || c.contains("." + PRICE_LEVEL)) return true;
+            if (c.equals(LAT_LNG) || c.contains("." + LAT_LNG)) return true;
         }
         return false;
     }
