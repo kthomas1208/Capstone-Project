@@ -2,13 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dreammist.foodwheel">
 
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
-        android:required="true"/>
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -16,10 +16,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/MyApiKey"/>
+            android:value="@string/MyApiKey" />
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -28,14 +27,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".DetailActivity"></activity>
+        <activity android:name=".DetailActivity" />
 
         <provider
-            android:name="com.dreammist.foodwheel.provider.RestaurantProvider"
+            android:name=".provider.RestaurantProvider"
             android:authorities="com.dreammist.foodwheel.provider"
             android:exported="false" />
 
+        <receiver android:name=".RestaurantWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/restaurant_widget_info" />
+        </receiver>
     </application>
 
 </manifest>
