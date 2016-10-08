@@ -17,7 +17,7 @@ public class RestaurantWidget extends AppWidgetProvider {
         String widgetText = "McDowell's";
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.restaurant_widget);
-        views.setTextViewText(R.id.widget_restaurant_name, widgetText);
+        //views.setTextViewText(R.id.widget_restaurant_name, widgetText);
 
 
         // Instruct the widget manager to update the widget
