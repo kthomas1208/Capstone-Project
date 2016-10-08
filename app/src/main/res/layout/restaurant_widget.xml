@@ -18,6 +18,7 @@ android:background="#FFFFFF">
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="@dimen/abc_list_item_padding_horizontal_material"
+            android:clickable="true"
             android:src="@drawable/search"
             />
 
