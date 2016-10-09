@@ -7,7 +7,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
-import android.widget.Toast;
+
+import com.dreammist.foodwheel.provider.restaurant.RestaurantCursor;
+import com.dreammist.foodwheel.provider.restaurant.RestaurantSelection;
+
+import java.util.Random;
 
 /**
  * Implementation of App Widget functionality.
@@ -57,22 +61,29 @@ public class RestaurantWidget extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
 
+        // Find button was clicked, so get a random restaurant from the DB
         if (FIND_ACTION.equals(intent.getAction())) {
 
-            Toast.makeText(context, "Hi.", Toast.LENGTH_SHORT).show();
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
-//            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-//
-//            RemoteViews remoteViews;
-//            ComponentName watchWidget;
-//
-//            remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-//            watchWidget = new ComponentName(context, Widget.class);
-//
-//            remoteViews.setTextViewText(R.id.sync_button, "TESTING");
-//
-//            appWidgetManager.updateAppWidget(watchWidget, remoteViews);
+            RemoteViews remoteViews;
+            ComponentName restaurantWidget;
 
+            remoteViews = new RemoteViews(context.getPackageName(), R.layout.restaurant_widget);
+            restaurantWidget = new ComponentName(context, RestaurantWidget.class);
+
+            // Get a random restaurant from the DB
+            RestaurantSelection where = new RestaurantSelection();
+            where.photoRefNot("null");
+            RestaurantCursor restaurant = where.query(context.getContentResolver());
+            Random rand = new Random();
+            restaurant.moveToPosition(rand.nextInt(restaurant.getCount()));
+
+            // Set the name of the restaurant for display
+            remoteViews.setTextViewText(R.id.widget_restaurant_name, restaurant.getName());
+
+            appWidgetManager.updateAppWidget(restaurantWidget, remoteViews);
+            restaurant.close();
         }
     }
 

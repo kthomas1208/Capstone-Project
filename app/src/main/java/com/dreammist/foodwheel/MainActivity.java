@@ -370,6 +370,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             // Get the PlaceID
             mPlaceID = restaurant.getPlaceId();
+            restaurant.close();
         }
 
     }
