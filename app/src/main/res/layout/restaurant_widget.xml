@@ -31,7 +31,6 @@ android:background="#FFFFFF">
             android:layout_marginEnd="8dp"
             android:fontFamily="sans-serif-light"
             android:textSize="24sp"
-            android:text="McDowell's"
             android:textColor="@android:color/black"
             android:contentDescription="@string/appwidget_text"
             />

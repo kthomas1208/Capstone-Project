@@ -2,8 +2,10 @@
     <string name="app_name">FoodWheel</string>
     <string name="open_now">Open now</string>
     <string name="closed">Closed</string>
-    <string name="free">free</string>
+    <string name="cheap">cheap</string>
     <string name="no_pricing_data">No pricing data available</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="widget_init_text">← Click to find food</string>
+    <string name="widget_warning">Launch app first!</string>
 </resources>

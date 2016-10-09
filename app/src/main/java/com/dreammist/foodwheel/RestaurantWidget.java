@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.dreammist.foodwheel.provider.restaurant.RestaurantCursor;
 import com.dreammist.foodwheel.provider.restaurant.RestaurantSelection;
@@ -19,22 +20,20 @@ import java.util.Random;
 public class RestaurantWidget extends AppWidgetProvider {
 
     private static final String FIND_ACTION = "findRestaurantClicked";
+    private static final String CLICK_RESTAURANT_ACTION = "restaurantNameClicked";
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        //CharSequence widgetText = context.getString(R.string.appwidget_text);
-        String widgetText = "McDowell's";
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.restaurant_widget);
-        //views.setTextViewText(R.id.widget_restaurant_name, widgetText);
 
-
-
+        // Set the initial text on the widget
+        CharSequence widgetText = context.getString(R.string.widget_init_text);
+        views.setTextViewText(R.id.widget_restaurant_name, widgetText);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
-
     }
 
     @Override
@@ -49,21 +48,21 @@ public class RestaurantWidget extends AppWidgetProvider {
         remoteViews = new RemoteViews(context.getPackageName(), R.layout.restaurant_widget);
         restaurantWidget = new ComponentName(context,RestaurantWidget.class);
 
-        Intent intent = new Intent(context, this.getClass());
-        intent.setAction(FIND_ACTION);
+        // Set action for find button
+        remoteViews.setOnClickPendingIntent(R.id.widget_button, getPendingSelfIntent(context,FIND_ACTION));
 
-        remoteViews.setOnClickPendingIntent(R.id.widget_button, PendingIntent.getBroadcast(context,0,intent,0));
+        // Set intent for pressing restaurant name
+        remoteViews.setOnClickPendingIntent(R.id.widget_restaurant_name, getPendingSelfIntent(context,CLICK_RESTAURANT_ACTION));
+
         appWidgetManager.updateAppWidget(restaurantWidget,remoteViews);
-
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
 
-        // Find button was clicked, so get a random restaurant from the DB
         if (FIND_ACTION.equals(intent.getAction())) {
-
+            // Find button was clicked, so get a random restaurant from the DB
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
             RemoteViews remoteViews;
@@ -76,20 +75,64 @@ public class RestaurantWidget extends AppWidgetProvider {
             RestaurantSelection where = new RestaurantSelection();
             where.photoRefNot("null");
             RestaurantCursor restaurant = where.query(context.getContentResolver());
-            Random rand = new Random();
-            restaurant.moveToPosition(rand.nextInt(restaurant.getCount()));
+            if(restaurant.getCount()>0) {
+                Random rand = new Random();
+                restaurant.moveToPosition(rand.nextInt(restaurant.getCount()));
 
-            // Set the name of the restaurant for display
-            remoteViews.setTextViewText(R.id.widget_restaurant_name, restaurant.getName());
+                // Set the name of the restaurant for display
+                remoteViews.setTextViewText(R.id.widget_restaurant_name, restaurant.getName());
 
-            appWidgetManager.updateAppWidget(restaurantWidget, remoteViews);
+                appWidgetManager.updateAppWidget(restaurantWidget, remoteViews);
+            }
+            else {
+                Toast.makeText(context, context.getString(R.string.widget_warning),
+                        Toast.LENGTH_SHORT).show();
+            }
             restaurant.close();
         }
+        if (CLICK_RESTAURANT_ACTION.equals(intent.getAction())) {
+            // Launch the Detail Activity with the restaurant data
+            // TODO: figure out how to get the specific place ID
+            Intent detailIntent = new Intent(context, DetailActivity.class);
+            RestaurantSelection where = new RestaurantSelection();
+            RestaurantCursor restaurant = where.query(context.getContentResolver());
+            if(restaurant.moveToNext()) {
+
+                detailIntent.putExtra(MainActivity.PLACE_ID, restaurant.getPlaceId());
+                if (!restaurant.getPhotoRef().isEmpty())
+                    detailIntent.putExtra(MainActivity.PHOTO_URI, restaurant.getPhotoRef());
+
+                context.startActivity(detailIntent);
+            }
+            else {
+                Toast.makeText(context, context.getString(R.string.widget_warning),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
+    protected PendingIntent getPendingSelfIntent(Context context, String action) {
+        Intent intent = new Intent(context, getClass());
+        intent.setAction(action);
+        return PendingIntent.getBroadcast(context, 0, intent, 0);
     }
 
     @Override
     public void onEnabled(Context context) {
         // Enter relevant functionality for when the first widget is created
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+
+        // Construct the RemoteViews object
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.restaurant_widget);
+        ComponentName restaurantWidget = new ComponentName(context, RestaurantWidget.class);
+
+        // Set the initial text on the widget
+        CharSequence widgetText = context.getString(R.string.widget_init_text);
+        views.setTextViewText(R.id.widget_restaurant_name, widgetText);
+
+        // Instruct the widget manager to update the widget
+        appWidgetManager.updateAppWidget(restaurantWidget, views);
     }
 
     @Override

@@ -29,10 +29,10 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         String placeID = null;
         String photoURI = null;
 
-        if (getIntent().hasExtra("PLACE_ID"))
-            placeID = getIntent().getStringExtra("PLACE_ID");
-        if (getIntent().hasExtra("PHOTO_URI"))
-            photoURI = getIntent().getStringExtra("PHOTO_URI");
+        if (getIntent().hasExtra(MainActivity.PLACE_ID))
+            placeID = getIntent().getStringExtra(MainActivity.PLACE_ID);
+        if (getIntent().hasExtra(MainActivity.PHOTO_URI))
+            photoURI = getIntent().getStringExtra(MainActivity.PHOTO_URI);
 
         RestaurantSelection where = new RestaurantSelection();
         where.placeId(placeID);
@@ -71,7 +71,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         int price = restaurant.getPriceLevel();
         String pricing;
         switch (price) {
-            case 0: pricing = getString(R.string.free);
+            case 0: pricing = getString(R.string.cheap);
                     break;
             case 1: pricing = "$";
                     break;

@@ -46,6 +46,7 @@ import java.util.Vector;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
     View mRestaurantLogo;
     View mRestaurantTitle;
     View mLocationFinder;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private GoogleApiClient mGoogleApiClient;
     protected final static int PLACE_PICKER_REQUEST = 9090;
+    protected static final String PLACE_ID = "PLACE_ID";
+    protected static final String PHOTO_URI = "PHOTO_URI";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                    Intent intent = new Intent(MainActivity.this,
                                                            DetailActivity.class);
 
-                                                   if (mPlaceID != null)  intent.putExtra("PLACE_ID", mPlaceID);
-                                                   if (mPhotoURI != null) intent.putExtra("PHOTO_URI", mPhotoURI);
+                                                   if (mPlaceID != null)  intent.putExtra(PLACE_ID, mPlaceID);
+                                                   if (mPhotoURI != null) intent.putExtra(PHOTO_URI, mPhotoURI);
 
                                                    ActivityOptions options =
                                                            ActivityOptions.makeSceneTransitionAnimation(
