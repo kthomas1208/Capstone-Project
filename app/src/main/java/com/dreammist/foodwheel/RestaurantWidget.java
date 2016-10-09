@@ -22,20 +22,6 @@ public class RestaurantWidget extends AppWidgetProvider {
     private static final String FIND_ACTION = "findRestaurantClicked";
     private static final String CLICK_RESTAURANT_ACTION = "restaurantNameClicked";
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
-
-        // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.restaurant_widget);
-
-        // Set the initial text on the widget
-        CharSequence widgetText = context.getString(R.string.widget_init_text);
-        views.setTextViewText(R.id.widget_restaurant_name, widgetText);
-
-        // Instruct the widget manager to update the widget
-        appWidgetManager.updateAppWidget(appWidgetId, views);
-    }
-
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 //        // There may be multiple widgets active, so update all of them
