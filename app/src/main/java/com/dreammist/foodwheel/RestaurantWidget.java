@@ -52,7 +52,11 @@ public class RestaurantWidget extends AppWidgetProvider {
         remoteViews.setOnClickPendingIntent(R.id.widget_button, getPendingSelfIntent(context,FIND_ACTION));
 
         // Set intent for pressing restaurant name
-        remoteViews.setOnClickPendingIntent(R.id.widget_restaurant_name, getPendingSelfIntent(context,CLICK_RESTAURANT_ACTION));
+        //remoteViews.setOnClickPendingIntent(R.id.widget_restaurant_name, getPendingSelfIntent(context,CLICK_RESTAURANT_ACTION));
+        Intent detailIntent = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context,0,detailIntent,0);
+        remoteViews.setOnClickPendingIntent(R.id.widget_restaurant_name, pendingIntent);
+
 
         appWidgetManager.updateAppWidget(restaurantWidget,remoteViews);
     }
@@ -91,23 +95,23 @@ public class RestaurantWidget extends AppWidgetProvider {
             restaurant.close();
         }
         if (CLICK_RESTAURANT_ACTION.equals(intent.getAction())) {
-            // Launch the Detail Activity with the restaurant data
-            // TODO: figure out how to get the specific place ID
-            Intent detailIntent = new Intent(context, DetailActivity.class);
-            RestaurantSelection where = new RestaurantSelection();
-            RestaurantCursor restaurant = where.query(context.getContentResolver());
-            if(restaurant.moveToNext()) {
-
-                detailIntent.putExtra(MainActivity.PLACE_ID, restaurant.getPlaceId());
-                if (!restaurant.getPhotoRef().isEmpty())
-                    detailIntent.putExtra(MainActivity.PHOTO_URI, restaurant.getPhotoRef());
-
-                context.startActivity(detailIntent);
-            }
-            else {
-                Toast.makeText(context, context.getString(R.string.widget_warning),
-                        Toast.LENGTH_SHORT).show();
-            }
+//            // Launch the Detail Activity with the restaurant data
+//            // TODO: figure out how to get the specific place ID
+//            Intent detailIntent = new Intent(context, DetailActivity.class);
+//            RestaurantSelection where = new RestaurantSelection();
+//            RestaurantCursor restaurant = where.query(context.getContentResolver());
+//            if(restaurant.moveToNext()) {
+//
+//                detailIntent.putExtra(MainActivity.PLACE_ID, restaurant.getPlaceId());
+//                if (!restaurant.getPhotoRef().isEmpty())
+//                    detailIntent.putExtra(MainActivity.PHOTO_URI, restaurant.getPhotoRef());
+//
+//                context.startActivity(detailIntent);
+//            }
+//            else {
+//                Toast.makeText(context, context.getString(R.string.widget_warning),
+//                        Toast.LENGTH_SHORT).show();
+//            }
         }
 
     }
