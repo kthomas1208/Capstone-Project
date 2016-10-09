@@ -5,6 +5,6 @@
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:minWidth="250dp"
     android:resizeMode="vertical"
-    android:previewImage="@drawable/example_appwidget_preview"
+    android:previewImage="@drawable/appwidget_preview"
     android:updatePeriodMillis="86400000"
-    android:widgetCategory="home_screen"></appwidget-provider>
+    android:widgetCategory="home_screen"/>
