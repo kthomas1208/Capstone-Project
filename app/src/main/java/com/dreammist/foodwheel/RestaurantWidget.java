@@ -40,6 +40,12 @@ public class RestaurantWidget extends AppWidgetProvider {
         // Set intent for pressing restaurant name
         //remoteViews.setOnClickPendingIntent(R.id.widget_restaurant_name, getPendingSelfIntent(context,CLICK_RESTAURANT_ACTION));
         Intent detailIntent = new Intent(context, MainActivity.class);
+        // TODO: 10/9/16 Figure out how to get the CORRECT placeId data from the DB
+//        RestaurantSelection where = new RestaurantSelection();
+//        RestaurantCursor restaurant = where.query(context.getContentResolver());
+//        restaurant.moveToNext();
+//        detailIntent.putExtra(MainActivity.PLACE_ID, restaurant.getPlaceId());
+
         PendingIntent pendingIntent = PendingIntent.getActivity(context,0,detailIntent,0);
         remoteViews.setOnClickPendingIntent(R.id.widget_restaurant_name, pendingIntent);
 
@@ -82,7 +88,6 @@ public class RestaurantWidget extends AppWidgetProvider {
         }
         if (CLICK_RESTAURANT_ACTION.equals(intent.getAction())) {
 //            // Launch the Detail Activity with the restaurant data
-//            // TODO: figure out how to get the specific place ID
 //            Intent detailIntent = new Intent(context, DetailActivity.class);
 //            RestaurantSelection where = new RestaurantSelection();
 //            RestaurantCursor restaurant = where.query(context.getContentResolver());
