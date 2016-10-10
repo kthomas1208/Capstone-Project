@@ -18,7 +18,6 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,14 +26,9 @@ import com.dreammist.foodwheel.provider.restaurant.RestaurantCursor;
 import com.dreammist.foodwheel.provider.restaurant.RestaurantSelection;
 import com.facebook.stetho.Stetho;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -57,15 +51,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     View mRestaurantLogo;
     View mRestaurantTitle;
-    View mLocationFinder;
-    View mLocationEnter;
     View mFindRestaurant;
     String mCoordinates;
     String mPlaceID;
     String mPhotoURI;
 
     private GoogleApiClient mGoogleApiClient;
-    protected final static int PLACE_PICKER_REQUEST = 9090;
     protected static final String PLACE_ID = "PLACE_ID";
     protected static final String PHOTO_URI = "PHOTO_URI";
 
@@ -88,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         mRestaurantLogo = findViewById(R.id.restaurantImage);
         mRestaurantTitle = findViewById(R.id.restaurantTitle);
-        mLocationEnter = findViewById(R.id.locationEdit);
         mRestaurantLogo.setOnClickListener(new View.OnClickListener() {
                                                @Override
                                                public void onClick(View view) {
@@ -108,26 +98,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                                }
                                            }
         );
-
-        mLocationFinder = findViewById(R.id.locatorButton);
-        mLocationFinder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.v(LOG_TAG, "clicked");
-                if (mGoogleApiClient == null || !mGoogleApiClient.isConnected())
-                    return;
-                Log.v(LOG_TAG, "connected");
-                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-
-                try {
-                    startActivityForResult(builder.build(MainActivity.this), PLACE_PICKER_REQUEST);
-                } catch (GooglePlayServicesRepairableException e) {
-                    Log.d("PlacesAPI Demo", "GooglePlayServicesRepairableException thrown");
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    Log.d("PlacesAPI Demo", "GooglePlayServicesNotAvailableException thrown");
-                }
-            }
-        });
 
         mFindRestaurant = findViewById(R.id.findButton);
         mFindRestaurant.setOnClickListener(new View.OnClickListener() {
@@ -163,25 +133,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
         super.onStop();
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
-            displayPlace(PlacePicker.getPlace(this, data));
-        }
-    }
-
-    private void displayPlace(Place place) {
-        LatLng latlng = place.getLatLng();
-        mCoordinates = latlng.latitude + "," + latlng.longitude;
-        Log.v(LOG_TAG, mCoordinates);
-
-        if (mLocationEnter != null) {
-            ((EditText) mLocationEnter).setText(mCoordinates);
-        }
-
     }
 
     @Override
@@ -387,7 +338,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 Log.v(LOG_TAG, "LatLng from call: " + latLng);
 
                 cvValues.add(restaurantValues);
-                //getContentResolver().update(RestaurantColumns.CONTENT_URI,restaurantValues,null,null);
             }
 
             int inserted = 0;
