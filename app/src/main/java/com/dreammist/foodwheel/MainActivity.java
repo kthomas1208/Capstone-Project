@@ -17,10 +17,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dreammist.foodwheel.provider.restaurant.RestaurantColumns;
 import com.dreammist.foodwheel.provider.restaurant.RestaurantCursor;
@@ -53,6 +53,7 @@ import java.util.Vector;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final int ACCESS_COARSE_LOCATION_PERMISSION = 0;
 
     View mRestaurantLogo;
     View mRestaurantTitle;
@@ -191,36 +192,62 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.v(LOG_TAG,"GOOGLE API CONNECTED");
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION)
+
+        // Check if location permission has been granted. If not, ask for it.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Toast.makeText(this, "Please give location permission in settings.", Toast.LENGTH_SHORT).show();
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    ACCESS_COARSE_LOCATION_PERMISSION);
             return;
         }
-
-        // Get the user's location
-        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (lastLocation != null) {
-            String lat = String.valueOf(lastLocation.getLatitude());
-            String lng = String.valueOf(lastLocation.getLongitude());
-            mCoordinates = lat.concat(",").concat(lng);
-            Log.d(LOG_TAG,"COORDINATES: " + mCoordinates);
+        else {
+            getUserLocation();
         }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case ACCESS_COARSE_LOCATION_PERMISSION: {
+                Button findButton = (Button)findViewById(R.id.findButton);
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    findButton.setEnabled(true);
+                    getUserLocation();
+
+                } else {
+                    findButton.setEnabled(false);
+                }
+                return;
+            }
+        }
+    }
+
+    /**
+     * Get the user's location
+     */
+    public void getUserLocation() {
+        try {
+            Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            if (lastLocation != null) {
+                String lat = String.valueOf(lastLocation.getLatitude());
+                String lng = String.valueOf(lastLocation.getLongitude());
+                mCoordinates = lat.concat(",").concat(lng);
+            }
+        }
+        catch (SecurityException e) {
+            e.printStackTrace();
+        }
     }
 
     public class FetchRestaurantsTask extends AsyncTask<Void, Void, Void> {
