@@ -1,13 +1,18 @@
 package com.dreammist.foodwheel;
 
+import android.Manifest;
 import android.app.ActivityOptions;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
@@ -15,6 +20,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dreammist.foodwheel.provider.restaurant.RestaurantColumns;
 import com.dreammist.foodwheel.provider.restaurant.RestaurantCursor;
@@ -24,6 +30,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
@@ -43,7 +50,7 @@ import java.net.URL;
 import java.util.Random;
 import java.util.Vector;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -72,7 +79,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
-                .enableAutoManage(this,this)
+                .addApi(LocationServices.API)
+                .enableAutoManage(this, this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
                 .build();
 
         mRestaurantLogo = findViewById(R.id.restaurantImage);
@@ -85,15 +95,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                    Intent intent = new Intent(MainActivity.this,
                                                            DetailActivity.class);
 
-                                                   if (mPlaceID != null)  intent.putExtra(PLACE_ID, mPlaceID);
+                                                   if (mPlaceID != null) intent.putExtra(PLACE_ID, mPlaceID);
                                                    if (mPhotoURI != null) intent.putExtra(PHOTO_URI, mPhotoURI);
 
                                                    ActivityOptions options =
                                                            ActivityOptions.makeSceneTransitionAnimation(
                                                                    MainActivity.this,
-                                                                   Pair.create(mRestaurantLogo,"logo"),
-                                                                   Pair.create(mRestaurantTitle,"title"));
-                                                   startActivity(intent,options.toBundle());
+                                                                   Pair.create(mRestaurantLogo, "logo"),
+                                                                   Pair.create(mRestaurantTitle, "title"));
+                                                   startActivity(intent, options.toBundle());
                                                }
                                            }
         );
@@ -103,17 +113,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             @Override
             public void onClick(View view) {
                 Log.v(LOG_TAG, "clicked");
-                if( mGoogleApiClient == null || !mGoogleApiClient.isConnected() )
+                if (mGoogleApiClient == null || !mGoogleApiClient.isConnected())
                     return;
                 Log.v(LOG_TAG, "connected");
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
                 try {
-                    startActivityForResult( builder.build( MainActivity.this), PLACE_PICKER_REQUEST );
-                } catch ( GooglePlayServicesRepairableException e ) {
-                    Log.d( "PlacesAPI Demo", "GooglePlayServicesRepairableException thrown" );
-                } catch ( GooglePlayServicesNotAvailableException e ) {
-                    Log.d( "PlacesAPI Demo", "GooglePlayServicesNotAvailableException thrown" );
+                    startActivityForResult(builder.build(MainActivity.this), PLACE_PICKER_REQUEST);
+                } catch (GooglePlayServicesRepairableException e) {
+                    Log.d("PlacesAPI Demo", "GooglePlayServicesRepairableException thrown");
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    Log.d("PlacesAPI Demo", "GooglePlayServicesNotAvailableException thrown");
                 }
             }
         });
@@ -130,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         initializeStetho();
     }
 
-    private void initializeStetho(){
+    private void initializeStetho() {
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(
@@ -142,38 +152,74 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     protected void onStart() {
-        super.onStart();
-        if(mGoogleApiClient != null)
+        if (mGoogleApiClient != null)
             mGoogleApiClient.connect();
+        super.onStart();
     }
 
     @Override
     protected void onStop() {
-        if(mGoogleApiClient != null && mGoogleApiClient.isConnected())
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected())
             mGoogleApiClient.disconnect();
         super.onStop();
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if( requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK ) {
-            displayPlace( PlacePicker.getPlace(this, data) );
+        if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK) {
+            displayPlace(PlacePicker.getPlace(this, data));
         }
     }
 
     private void displayPlace(Place place) {
         LatLng latlng = place.getLatLng();
         mCoordinates = latlng.latitude + "," + latlng.longitude;
-        Log.v(LOG_TAG,mCoordinates);
+        Log.v(LOG_TAG, mCoordinates);
 
-        if(mLocationEnter != null) {
-            ((EditText)mLocationEnter).setText(mCoordinates);
+        if (mLocationEnter != null) {
+            ((EditText) mLocationEnter).setText(mCoordinates);
         }
 
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.v(LOG_TAG,"GOOGLE API CONNECTED");
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            Toast.makeText(this, "Please give location permission in settings.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Get the user's location
+        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (lastLocation != null) {
+            String lat = String.valueOf(lastLocation.getLatitude());
+            String lng = String.valueOf(lastLocation.getLongitude());
+            mCoordinates = lat.concat(",").concat(lng);
+            Log.d(LOG_TAG,"COORDINATES: " + mCoordinates);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
 
     }
 
@@ -186,10 +232,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         @Override
         protected Void doInBackground(Void... voids) {
-            mCoordinates = "40.740812499999976,-73.69514453125";
+            //mCoordinates = "40.740812499999976,-73.69514453125";
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
+
+            Log.v(LOG_TAG, "Coordinates: " + mCoordinates);
 
             if(mCoordinates == null) return null;
 
