@@ -53,7 +53,7 @@ import java.util.Vector;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-    private static final int ACCESS_COARSE_LOCATION_PERMISSION = 0;
+    private static final int ACCESS_FINE_LOCATION_PERMISSION = 0;
 
     View mRestaurantLogo;
     View mRestaurantTitle;
@@ -194,12 +194,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Log.v(LOG_TAG,"GOOGLE API CONNECTED");
 
         // Check if location permission has been granted. If not, ask for it.
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                    ACCESS_COARSE_LOCATION_PERMISSION);
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    ACCESS_FINE_LOCATION_PERMISSION);
             return;
         }
         else {
@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case ACCESS_COARSE_LOCATION_PERMISSION: {
+            case ACCESS_FINE_LOCATION_PERMISSION: {
                 Button findButton = (Button)findViewById(R.id.findButton);
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
