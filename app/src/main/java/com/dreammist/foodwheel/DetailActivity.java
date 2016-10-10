@@ -71,8 +71,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         int price = restaurant.getPriceLevel();
         String pricing;
         switch (price) {
-            case 0: pricing = getString(R.string.cheap);
-                    break;
+            case 0:
             case 1: pricing = "$";
                     break;
             case 2: pricing = "$$";
