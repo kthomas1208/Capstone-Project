@@ -2,10 +2,22 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="restaurant_name_text">34sp</dimen>
+
+    <dimen name="main_image_width">250dp</dimen>
+    <dimen name="main_image_height">250dp</dimen>
+
+    <dimen name="detail_image_width">148dp</dimen>
+    <dimen name="detail_image_height">169dp</dimen>
+
+    <dimen name="map_height">300dp</dimen>
 
     <!--
 Refer to App Widget Documentation for margin information
 http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     -->
     <dimen name="widget_margin">8dp</dimen>
+    <dimen name="widget_button_width">40dp</dimen>
+    <dimen name="widget_button_height">40dp</dimen>
+    <dimen name="widget_text_size">24sp</dimen>
 </resources>

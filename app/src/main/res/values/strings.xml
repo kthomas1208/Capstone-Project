@@ -4,8 +4,23 @@
     <string name="closed">Closed</string>
     <string name="cheap">cheap</string>
     <string name="no_pricing_data">No pricing data available</string>
-    <string name="appwidget_text">EXAMPLE</string>
+    <string name="main_init_text">Click to find a restaurant</string>
+    <string name="button_text">Find Restaurant</string>
+
+    <string name="title_transition_name">title</string>
+    <string name="image_transition_name">logo</string>
+
+    <!-- Widget Strings -->
     <string name="add_widget">Add widget</string>
     <string name="widget_init_text">← Click to find food</string>
     <string name="widget_warning">Launch app first!</string>
+
+    <!-- Content Descriptions -->
+    <string name="description_restaurant_name">restaurant name</string>
+    <string name="description_restaurant_image">restaurant image</string>
+    <string name="description_restaurant_rating">restaurant rating</string>
+    <string name="description_restaurant_hours">restaurant hours</string>
+    <string name="description_restaurant_price">restaurant price</string>
+    <string name="description_find_restaurant_button">find restaurant button</string>
+
 </resources>
