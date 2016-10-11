@@ -1,78 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-
-    tools:context="com.dreammist.foodwheel.DetailActivity"
-    android:id="@+id/scrollView" >
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:fitsSystemWindows="true"
     android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/app_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="@dimen/toolbar_elevation"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:title="@string/app_name"
+        app:titleTextColor="@android:color/white"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:id="@+id/restaurantTitle"
-        tools:text="McDowell's"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="@dimen/restaurant_name_text"
-        android:transitionName="@string/title_transition_name"
-        android:contentDescription="@string/description_restaurant_name"/>
-    <ImageView
-        android:layout_width="@dimen/detail_image_width"
-        android:layout_height="@dimen/detail_image_height"
-        android:id="@+id/restaurantImage"
-        android:src="@drawable/placeholder"
-        android:layout_gravity="center_horizontal"
-        android:transitionName="@string/image_transition_name"
-        android:contentDescription="@string/description_restaurant_image"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.dreammist.foodwheel.DetailActivity"
+        android:id="@+id/scrollView" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:orientation="vertical">
 
-    <RatingBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ratingBar"
-        android:layout_gravity="center_horizontal"
-        android:isIndicator="true"
-        android:contentDescription="@string/description_restaurant_rating"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:id="@+id/restaurantTitle"
+                tools:text="McDowell's"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="@dimen/restaurant_name_text"
+                android:transitionName="@string/title_transition_name"
+                android:contentDescription="@string/description_restaurant_name"/>
+            <ImageView
+                android:layout_width="@dimen/detail_image_width"
+                android:layout_height="@dimen/detail_image_height"
+                android:id="@+id/restaurantImage"
+                android:src="@drawable/placeholder"
+                android:layout_gravity="center_horizontal"
+                android:transitionName="@string/image_transition_name"
+                android:contentDescription="@string/description_restaurant_image"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        tools:text="Fast food • Burgers"
-        android:id="@+id/restaurantTypes"
-        android:layout_gravity="center_horizontal" />
+            <RatingBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/ratingBar"
+                android:layout_gravity="center_horizontal"
+                android:isIndicator="true"
+                android:contentDescription="@string/description_restaurant_rating"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        tools:text="Open til 11pm"
-        android:id="@+id/hoursText"
-        android:layout_gravity="center_horizontal"
-        android:contentDescription="@string/description_restaurant_hours"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="Fast food • Burgers"
+                android:id="@+id/restaurantTypes"
+                android:layout_gravity="center_horizontal" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        tools:text="$"
-        android:id="@+id/price"
-        android:layout_gravity="center_horizontal"
-        android:contentDescription="@string/description_restaurant_price"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="Open til 11pm"
+                android:id="@+id/hoursText"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/description_restaurant_hours"/>
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        android:name="com.google.android.gms.maps.MapFragment"
-        android:id="@+id/map"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/map_height" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                tools:text="$"
+                android:id="@+id/price"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/description_restaurant_price"/>
+
+            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                android:name="com.google.android.gms.maps.MapFragment"
+                android:id="@+id/map"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/map_height" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
-</ScrollView>
