@@ -92,8 +92,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
         mLng = Double.parseDouble(latLngString[1]);
 
         // Show the restaurant location on a map
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
@@ -105,6 +104,5 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
                 .title(mName));
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position,15));
         googleMap.getUiSettings().setScrollGesturesEnabled(false);
-
     }
 }

@@ -142,8 +142,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.v(LOG_TAG,"GOOGLE API CONNECTED");
-
         // Check if location permission has been granted. If not, ask for it.
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -210,12 +208,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         @Override
         protected Void doInBackground(Void... voids) {
-            //mCoordinates = "40.740812499999976,-73.69514453125";
-
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-
-            Log.v(LOG_TAG, "Coordinates: " + mCoordinates);
 
             if(mCoordinates == null) return null;
 
@@ -241,8 +235,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         .build();
 
                 URL url = new URL(builtUri.toString());
-
-                Log.v(LOG_TAG,"API Call: " + url.toString());
 
                 // Create the Places API request, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -334,9 +326,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 restaurantValues.put(RestaurantColumns.PRICE_LEVEL,priceLevel);
                 restaurantValues.put(RestaurantColumns.LAT_LNG,latLng);
 
-                Log.v(LOG_TAG, "restaurant name: " + restaurantName);
-                Log.v(LOG_TAG, "LatLng from call: " + latLng);
-
                 cvValues.add(restaurantValues);
             }
 
@@ -348,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 inserted = getContentResolver().bulkInsert(RestaurantColumns.CONTENT_URI, cvArray);
             }
 
-            Log.v(LOG_TAG, "FetchRestaurantsTask Complete. " + inserted + " Inserted");
+            Log.d(LOG_TAG, "FetchRestaurantsTask Complete. " + inserted + " Inserted");
         }
 
         @Override
@@ -381,7 +370,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             String API_KEY = BuildConfig.MyApiKey;
             String photoRef = restaurant.getPhotoRef();
-            Log.v(LOG_TAG, "PHOTO REF: " + photoRef);
 
             if(!photoRef.equals("null")) {
                 Uri builtUri = Uri.parse(PHOTOS_BASE_URL).buildUpon()
@@ -392,7 +380,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 mPhotoURI = builtUri.toString();
 
-                Log.v(LOG_TAG, mPhotoURI);
                 Picasso.with(mContext).load(mPhotoURI).placeholder(R.drawable.placeholder)
                         .into((ImageView) mRestaurantLogo)
                 ;
@@ -402,6 +389,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             mPlaceID = restaurant.getPlaceId();
             restaurant.close();
         }
-
     }
 }
