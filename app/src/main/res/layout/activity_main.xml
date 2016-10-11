@@ -18,15 +18,15 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:id="@+id/restaurantTitle"
-            android:text="McDowell's"
+            android:text="Click to find a restaurant"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="48dp"
+            android:textSize="34sp"
             android:transitionName="title"/>
         <ImageView
             android:layout_width="250dp"
             android:layout_height="250dp"
             android:id="@+id/restaurantImage"
-            android:src="@drawable/mcdowells"
+            android:src="@drawable/placeholder"
             android:layout_gravity="center_horizontal"
             android:transitionName="logo"/>
 

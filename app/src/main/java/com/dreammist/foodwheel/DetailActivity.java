@@ -46,8 +46,7 @@ public class DetailActivity extends AppCompatActivity implements OnMapReadyCallb
 
         // Set Restaurant Logo
         ImageView restaurantLogo = (ImageView)findViewById(R.id.restaurantImage);
-        Picasso.with(this).load(photoURI).into(restaurantLogo);
-        // if no image, use placeholder
+        Picasso.with(this).load(photoURI).placeholder(R.drawable.placeholder).into(restaurantLogo);
 
         // Set rating
         float rating = 0;

@@ -393,7 +393,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 mPhotoURI = builtUri.toString();
 
                 Log.v(LOG_TAG, mPhotoURI);
-                Picasso.with(mContext).load(mPhotoURI).into((ImageView) mRestaurantLogo);
+                Picasso.with(mContext).load(mPhotoURI).placeholder(R.drawable.placeholder)
+                        .into((ImageView) mRestaurantLogo)
+                ;
             }
 
             // Get the PlaceID

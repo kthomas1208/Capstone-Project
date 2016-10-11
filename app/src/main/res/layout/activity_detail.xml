@@ -21,15 +21,15 @@
         android:layout_gravity="center_horizontal"
         android:gravity="center"
         android:id="@+id/restaurantTitle"
-        android:text="McDowell's"
+        tools:text="McDowell's"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="48dp"
+        android:textSize="34sp"
         android:transitionName="title"/>
     <ImageView
         android:layout_width="148dp"
         android:layout_height="169dp"
         android:id="@+id/restaurantImage"
-        android:src="@drawable/mcdowells"
+        android:src="@drawable/placeholder"
         android:layout_gravity="center_horizontal"
         android:transitionName="logo"/>
 
@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Fast food • Burgers"
+        tools:text="Fast food • Burgers"
         android:id="@+id/restaurantTypes"
         android:layout_gravity="center_horizontal" />
 
@@ -52,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Open til 11pm"
+        tools:text="Open til 11pm"
         android:id="@+id/hoursText"
         android:layout_gravity="center_horizontal" />
 
@@ -60,7 +60,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="$"
+        tools:text="$"
         android:id="@+id/price"
         android:layout_gravity="center_horizontal" />
 
