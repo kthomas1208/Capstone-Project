@@ -99,10 +99,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                            }
         );
 
+        // Prevent launching Detail Activity without data
+        mRestaurantLogo.setClickable(false);
+
         mFindRestaurant = findViewById(R.id.findButton);
         mFindRestaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ImageView image = (ImageView)findViewById(R.id.restaurantImage);
+                image.setClickable(true);
                 FetchRestaurantsTask restaurantTask = new FetchRestaurantsTask(MainActivity.this);
                 restaurantTask.execute();
             }
