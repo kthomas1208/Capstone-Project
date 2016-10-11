@@ -9,7 +9,15 @@ android {
         minSdkVersion 21
         targetSdkVersion 24
         versionCode 1
-        versionName "1.0"
+        versionName "1.0b"
+    }
+    signingConfigs {
+        release {
+            keyAlias 'capstone_key'
+            keyPassword 'aaaaaa'
+            storeFile file('capstone_keystore.jks')
+            storePassword 'aaaaaa'
+        }
     }
     buildTypes {
         release {
@@ -18,6 +26,7 @@ android {
         }
         release {
             resValue "string", "MyApiKey", MyApiKey
+            signingConfig signingConfigs.release
         }
         debug {
             resValue "string", "MyApiKey", MyApiKey

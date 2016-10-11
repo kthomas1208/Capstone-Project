@@ -341,8 +341,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 cvValues.toArray(cvArray);
                 inserted = getContentResolver().bulkInsert(RestaurantColumns.CONTENT_URI, cvArray);
             }
-
-            Log.d(LOG_TAG, "FetchRestaurantsTask Complete. " + inserted + " Inserted");
         }
 
         @Override
