@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Toolbar toolbar = (Toolbar)findViewById(R.id.app_toolbar);
         setSupportActionBar(toolbar);
 
+        // Always delete data from db when launching app
+        getContentResolver().delete(RestaurantColumns.CONTENT_URI,null,null);
+
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
                 .addApi(Places.GEO_DATA_API)
